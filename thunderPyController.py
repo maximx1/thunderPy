@@ -35,6 +35,12 @@ class launchControl():
          self.dev.detach_kernel_driver(0)
       self.dev.set_configuration()
 
+   def control(command, time):
+      if command == "l":
+         stop = time.time() + time
+         while time.time() < stop:
+            moveLeft(self)
+
    def moveUp(self):
       self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x02,0x00,0x00,0x00,0x00,0x00,0x00]) 
 
@@ -56,4 +62,4 @@ class launchControl():
 if __name__ == '__main__':
    if not os.geteuid() == 0:
        sys.exit("Please run as sudo.")
-   launchControl()
+   launchControl().control("l", 1000)
