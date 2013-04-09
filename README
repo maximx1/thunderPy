@@ -1,0 +1,7 @@
+ThunderPy
+
+Code modified from from:
+	<a href="https://github.com/nmilford/stormLauncher">nmilford stormLauncher PyUSB coding base.</a>
+
+Requirements
+	<a href="https://pypi.python.org/pypi/pyusb/1.0.0a2">PyUSB Library - version: 1.0</a>
