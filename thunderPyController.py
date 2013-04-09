@@ -20,15 +20,13 @@ import sys
 import time				#Library that determines time.
 import usb.core		#Libraries to control the usb interface.
 
-class eventArgs
-
 ##
 # Controller class for manipulating the Thunder class missile launcher.
 #
 # @author: Justin Walrath <walrathjaw@gmail.com>
 # @since: 4/9/2013
 ##
-class launchControl(Frame):
+class launchControl():
 	def __init__(self):
       self.dev = usb.core.find(idVendor=0x2123, idProduct=0x1010)
       if self.dev is None:
@@ -37,25 +35,25 @@ class launchControl(Frame):
          self.dev.detach_kernel_driver(0)
       self.dev.set_configuration()
 
-   def turretUp(self, event):
+   def moveUp(self):
       self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x02,0x00,0x00,0x00,0x00,0x00,0x00]) 
 
-   def turretDown(self, event):
+   def moveDown(self):
       self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x01,0x00,0x00,0x00,0x00,0x00,0x00])
 
-   def turretLeft(self, event):
+   def moveLeft(self):
       self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x04,0x00,0x00,0x00,0x00,0x00,0x00])
 
-   def turretRight(self, event):
+   def moveRight(self):
       self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x08,0x00,0x00,0x00,0x00,0x00,0x00])
 
-   def turretStop(self, event):
+   def stopMove(self):
       self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x20,0x00,0x00,0x00,0x00,0x00,0x00])
 
-   def turretFire(self, event):
+   def launchRocket(self):
       self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x10,0x00,0x00,0x00,0x00,0x00,0x00])
 
 if __name__ == '__main__':
    if not os.geteuid() == 0:
-       sys.exit("Script must be run as root.")
-   launchControl().mainloop()
+       sys.exit("Please run as sudo.")
+   launchControl()
