@@ -28,38 +28,75 @@ import usb.core		#Libraries to control the usb interface.
 ##
 class launchControl():
 	def __init__(self):
-      self.dev = usb.core.find(idVendor=0x2123, idProduct=0x1010)
-      if self.dev is None:
-         raise ValueError('Launcher not found.')
-      if self.dev.is_kernel_driver_active(0) is True:
-         self.dev.detach_kernel_driver(0)
-      self.dev.set_configuration()
+		self.dev = usb.core.find(idVendor=0x2123, idProduct=0x1010)
+		if self.dev is None:
+			raise ValueError('Launcher not found.')
+		if self.dev.is_kernel_driver_active(0) is True:
+			self.dev.detach_kernel_driver(0)
+		self.dev.set_configuration()
 
-   def control(command, time):
-      if command == "l":
-         stop = time.time() + time
-         while time.time() < stop:
-            moveLeft(self)
+	def moveUp(self):
+		self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x02,0x00,0x00,0x00,0x00,0x00,0x00]) 
 
-   def moveUp(self):
-      self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x02,0x00,0x00,0x00,0x00,0x00,0x00]) 
+	def moveDown(self):
+		self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x01,0x00,0x00,0x00,0x00,0x00,0x00])
 
-   def moveDown(self):
-      self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x01,0x00,0x00,0x00,0x00,0x00,0x00])
+	def moveLeft(self):
+		self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x04,0x00,0x00,0x00,0x00,0x00,0x00])
 
-   def moveLeft(self):
-      self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x04,0x00,0x00,0x00,0x00,0x00,0x00])
+	def moveRight(self):
+		self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x08,0x00,0x00,0x00,0x00,0x00,0x00])
 
-   def moveRight(self):
-      self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x08,0x00,0x00,0x00,0x00,0x00,0x00])
+	def stopMove(self):
+		self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x20,0x00,0x00,0x00,0x00,0x00,0x00])
 
-   def stopMove(self):
-      self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x20,0x00,0x00,0x00,0x00,0x00,0x00])
+	def launchRocket(self):
+		self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x10,0x00,0x00,0x00,0x00,0x00,0x00])
 
-   def launchRocket(self):
-      self.dev.ctrl_transfer(0x21,0x09,0,0,[0x02,0x10,0x00,0x00,0x00,0x00,0x00,0x00])
+	def control(self, command, mov_time):
+#Commands
+		#Left
+		if command == "-l":
+			stop = time.time() + mov_time
+			while time.time() < stop:
+				self.moveLeft()
+			self.stopMove()
+			print "done"
+		#Right
+		if command == "-r":
+			stop = time.time() + mov_time
+			while time.time() < stop:
+				self.moveRight()
+			self.stopMove()
+			print "done"
+		#Up
+		if command == "-u":
+			stop = time.time() + mov_time
+			while time.time() < stop:
+				self.moveUp()
+			self.stopMove()
+			print "done"
+		#Down
+		if command == "-d":
+			stop = time.time() + mov_time
+			while time.time() < stop:
+				self.moveDown()
+			self.stopMove()
+			print "done"
+		#Fire
+		if command == "-f":
+			self.launchRocket()
+			stop = time.time() + 2		#Pause for 2 seconds to make sure it fires.
+			while time.time() < stop:
+				i
+			self.stopMove()
+			print "done"
 
 if __name__ == '__main__':
-   if not os.geteuid() == 0:
-       sys.exit("Please run as sudo.")
-   launchControl().control("l", 1000)
+	if not os.geteuid() == 0:
+		sys.exit("Please run as sudo.")
+	if len(sys.argv) == 3:
+		launchControl().control(sys.argv[1], float(sys.argv[2]))
+	elif len(sys.argv) == 2:
+		if sys.arg[1] == "-f":
+			launchControl().control("-f", 2)
