@@ -56,35 +56,35 @@ class launchControl():
 	def control(self, command, mov_time):
 #Commands
 		#Left
-		if command == "-l":
+		if command == "-l" or command == "-left":
 			stop = time.time() + mov_time
 			while time.time() < stop:
 				self.moveLeft()
 			self.stopMove()
 			print "done"
 		#Right
-		if command == "-r":
+		if command == "-r" or command == "-right":
 			stop = time.time() + mov_time
 			while time.time() < stop:
 				self.moveRight()
 			self.stopMove()
 			print "done"
 		#Up
-		if command == "-u":
+		if command == "-u" or command == "-up":
 			stop = time.time() + mov_time
 			while time.time() < stop:
 				self.moveUp()
 			self.stopMove()
 			print "done"
 		#Down
-		if command == "-d":
+		if command == "-d" or command == "-down":
 			stop = time.time() + mov_time
 			while time.time() < stop:
 				self.moveDown()
 			self.stopMove()
 			print "done"
 		#Fire
-		if command == "-f":
+		if command == "-f" or command == "-fire":
 			self.launchRocket()
 			stop = time.time() + 2		#Pause for 2 seconds to make sure it fires.
 			while time.time() < stop:
@@ -95,8 +95,11 @@ class launchControl():
 if __name__ == '__main__':
 	if not os.geteuid() == 0:
 		sys.exit("Please run as sudo.")
+	if len(sys.argv) == 4:
+		
 	if len(sys.argv) == 3:
-		launchControl().control(sys.argv[1], float(sys.argv[2]))
+		if sys.arg[1] == "-c" or sys.arg[1] == "-continue":
+			launchControl().control(sys.argv[2], float(sys.argv[3]))
 	elif len(sys.argv) == 2:
-		if sys.arg[1] == "-f":
+		if sys.arg[1] == "-f" or sys.arg[1] == "-fire":
 			launchControl().control("-f", 2)
