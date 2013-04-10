@@ -2,6 +2,16 @@ ThunderPy
 
 This is a driver that controls the Dream Cheeky Thunder Missile Launcher.
 
+Controls:
+	sudo ./thunderPyController.py -[direction] [time(sec)]
+
+Directions:
+	-l -left
+	-r -right
+	-d -down
+	-u -up
+	-f -fire
+
 Code modified from from:
 	(https://github.com/nmilford/stormLauncher): nmilford stormLauncher PyUSB coding base.
 
