@@ -1,0 +1,14 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="SeekAndDestroy/Game1.cs">
+    <Files>
+      <File FileName="SeekAndDestroy/Game1.cs" Line="214" Column="1" />
+      <File FileName="SeekAndDestroy/Input/G_key.cs" Line="3" Column="11" />
+      <File FileName="SeekAndDestroy/Input/InputController.cs" Line="128" Column="18" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
