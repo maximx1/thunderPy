@@ -111,22 +111,16 @@ textPrint = TextPrint()
 #concurrency variables
 moving = False
 hatDirection = -1
-hatVal = 0;
+firing = False
+fireLength = 0
 
 # -------- Main Program Loop -----------
-while done==False:
+while done == False:
 	# EVENT PROCESSING STEP
 	for event in pygame.event.get(): # User did something
 		if event.type == pygame.QUIT: # If user clicked close
 			done=True # Flag that we are done so we exit this loop
         
-		# Possible joystick actions: JOYAXISMOTION JOYBALLMOTION JOYBUTTONDOWN JOYBUTTONUP JOYHATMOTION
-		if event.type == pygame.JOYBUTTONDOWN:
-			print "Joystick button pressed."
-		if event.type == pygame.JOYBUTTONUP:
-			print "Joystick button released."
-            
- 
 	# DRAWING STEP
 	# First, clear the screen to white. Don't put other drawing commands
 	# above this, or they will be erased with this command.
@@ -144,31 +138,27 @@ while done==False:
 		joystick = pygame.joystick.Joystick(i)
 		joystick.init()
     
-		textPrint.l_print(screen, "Joystick {}".format(i) )
-		textPrint.indent()
-
-		# Get the name from the OS for the controller/joystick
-		name = joystick.get_name()
-		textPrint.l_print(screen, "Joystick name: {}".format(name) )
-        
-		# Usually axis run in pairs, up/down for one, and left/right for
-		# the other.
-		axes = joystick.get_numaxes()
-		textPrint.l_print(screen, "Number of axes: {}".format(axes) )
-		textPrint.indent()
-        
-		for i in range( axes ):
-			axis = joystick.get_axis( i )
-			textPrint.l_print(screen, "Axis {} value: {:>6.3f}".format(i, axis) )
-		textPrint.unindent()
-            
 		buttons = joystick.get_numbuttons()
 		textPrint.l_print(screen, "Number of buttons: {}".format(buttons) )
 		textPrint.indent()
 
-		for i in range( buttons ):
-			button = joystick.get_button( i )
-			textPrint.l_print(screen, "Button {:>2} value: {}".format(i,button) )
+		#Only going to be using the "A" button
+		#for i in range( buttons ):
+		button = joystick.get_button(0)
+		if firing:
+			if (pygame.time.get_ticks() - fireLength) > 4000:
+				firing = False
+				launcher.stopMove()
+		else:
+			if button == 1:
+				firing = True
+				fireLength = pygame.time.get_ticks()
+				launcher.launchRocket()
+		textPrint.l_print(screen, "Button {:>2} value: {}".format(0,button) )
+		button = joystick.get_button(7)
+		textPrint.l_print(screen, "Button {:>2} value: {}".format(7,button) )
+		if button == 1:
+			done = True
 		textPrint.unindent()
             
 		# Hat switch. All or nothing for direction, not like joysticks.
@@ -176,37 +166,35 @@ while done==False:
 		hats = joystick.get_numhats()
 		textPrint.l_print(screen, "Number of hats: {}".format(hats) )
 		textPrint.indent()
-#
-# moving = False
-# hatDirection = -1
-#
+
+		#Commented out since there is only 1 d-pad
 		#for i in range( hats ):
 		hat = joystick.get_hat(0)
-		
-		if moving:
-			if hat[hatDirection] == 0:
-				launcher.stopMove()
-				moving = False
-		else:
-			if hat[0] != 0:
-				if hat[0] == -1: #left
-					launcher.moveLeft()
-					moving = True
-					hatDirection = 0
-				if hat[0] == 1: #Right
-					launcher.moveRight()
-					moving = True
-					hatDirection = 0
-			elif hat[1] != 0:
-				if hat[1] == -1: #Down
-					launcher.moveDown()
-					moving = True
-					hatDirection = 1
-				if hat[1] == 1: #Up
-					launcher.moveUp()
-					moving = True
-					hatDirection = 1
-		textPrint.l_print(screen, "Hat {} value: {}".format(i, str(hat)) )
+		if not firing:
+			if moving:
+				if hat[hatDirection] == 0:
+					launcher.stopMove()
+					moving = False
+			else:
+				if hat[0] != 0:
+					if hat[0] == -1: #left
+						launcher.moveLeft()
+						moving = True
+						hatDirection = 0
+					if hat[0] == 1: #Right
+						launcher.moveRight()
+						moving = True
+						hatDirection = 0
+				elif hat[1] != 0:
+					if hat[1] == -1: #Down
+						launcher.moveDown()
+						moving = True
+						hatDirection = 1
+					if hat[1] == 1: #Up
+						launcher.moveUp()
+						moving = True
+						hatDirection = 1
+		textPrint.l_print(screen, "Hat {} value: {}".format(0, str(hat)) )
 		textPrint.unindent()  
 		textPrint.unindent()
 
@@ -217,6 +205,9 @@ while done==False:
 
 	# Limit to 20 frames per second
 	clock.tick(20)
+
+	if done:
+		launcher.stopMove()
     
 # Close the window and quit.
 # If you forget this line, the program will 'hang'
