@@ -2,7 +2,11 @@ ThunderPy
 
 This is a driver that controls the Dream Cheeky Thunder Missile Launcher.
 
-Controls:
+There are 3 programs
+1) SharpMissionControl that needs thunderPyController.py in the running directory (This is the gtk gui buttons mono c# version)
+2) thunderPy360.py That uses the xbox controller to run the device (stand alone)
+3) thunderPyController.py This is the base command script to be passed values into.
+Controls for 3:
 	for a timed action->	sudo ./thunderPyController.py [direction] [time(sec)]
 	for an indefinite action-> sudo ./thunderPyController.py -c [direction]
 *Remember that -c must be first flag and the direction must include flag
