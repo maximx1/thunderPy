@@ -16,10 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import pygame				#Handles the interface to the xbox and display
-import os				#Determines if in sudo or not.
-import sys				#Handles the command line entry point environment
-import time				#Library that determines time.
+import pygame					#Handles the interface to the xbox and display
+import os						#Determines if in sudo or not.
+import sys						#Handles the command line entry point environment
+import time						#Library that determines time.
 import usb.core				#Libraries to control the usb interface.
 
 # Define some colors
@@ -108,6 +108,11 @@ pygame.joystick.init()
 # Get ready to print
 textPrint = TextPrint()
 
+#concurrency variables
+moving = False
+hatDirection = -1
+hatVal = 0;
+
 # -------- Main Program Loop -----------
 while done==False:
 	# EVENT PROCESSING STEP
@@ -171,10 +176,37 @@ while done==False:
 		hats = joystick.get_numhats()
 		textPrint.l_print(screen, "Number of hats: {}".format(hats) )
 		textPrint.indent()
-
-		for i in range( hats ):
-			hat = joystick.get_hat( i )
-			textPrint.l_print(screen, "Hat {} value: {}".format(i, str(hat)) )
+#
+# moving = False
+# hatDirection = -1
+#
+		#for i in range( hats ):
+		hat = joystick.get_hat(0)
+		
+		if moving:
+			if hat[hatDirection] == 0:
+				launcher.stopMove()
+				moving = False
+		else:
+			if hat[0] != 0:
+				if hat[0] == -1: #left
+					launcher.moveLeft()
+					moving = True
+					hatDirection = 0
+				if hat[0] == 1: #Right
+					launcher.moveRight()
+					moving = True
+					hatDirection = 0
+			elif hat[1] != 0:
+				if hat[1] == -1: #Down
+					launcher.moveDown()
+					moving = True
+					hatDirection = 1
+				if hat[1] == 1: #Up
+					launcher.moveUp()
+					moving = True
+					hatDirection = 1
+		textPrint.l_print(screen, "Hat {} value: {}".format(i, str(hat)) )
 		textPrint.unindent()  
 		textPrint.unindent()
 
