@@ -23,8 +23,11 @@ import time						#Library that determines time.
 import usb.core				#Libraries to control the usb interface.
 
 # Define some colors
-BLACK    = (   0,   0,   0)
-WHITE    = ( 255, 255, 255)
+BLACK  = (  0,   0,   0)
+WHITE  = (255, 255, 255)
+RED    = (255,   0,   0)
+GREEN  = (  0, 255,   0)
+YELLOW = (255, 255,   0)
 
 #This class is the controls for the ThunderPy missile launcher.
 class launchControl():
@@ -113,6 +116,9 @@ moving = False
 hatDirection = -1
 firing = False
 fireLength = 0
+alert = "Stationary"
+
+screenColor = WHITE
 
 # -------- Main Program Loop -----------
 while done == False:
@@ -124,14 +130,14 @@ while done == False:
 	# DRAWING STEP
 	# First, clear the screen to white. Don't put other drawing commands
 	# above this, or they will be erased with this command.
-	screen.fill(WHITE)
+	screen.fill(screenColor)
 	textPrint.reset()
 
 	# Get count of joysticks
 	joystick_count = pygame.joystick.get_count()
 
-	textPrint.l_print(screen, "Number of joysticks: {}".format(joystick_count) )
-	textPrint.indent()
+	#textPrint.l_print(screen, "Number of joysticks: {}".format(joystick_count) )
+	#textPrint.indent()
     
 	# For each joystick:
 	for i in range(joystick_count):
@@ -139,33 +145,40 @@ while done == False:
 		joystick.init()
     
 		buttons = joystick.get_numbuttons()
-		textPrint.l_print(screen, "Number of buttons: {}".format(buttons) )
-		textPrint.indent()
+		#textPrint.l_print(screen, "Number of buttons: {}".format(buttons) )
+		#textPrint.indent()
 
 		#Only going to be using the "A" button
 		#for i in range( buttons ):
 		button = joystick.get_button(0)
-		if firing:
+		if firing:	
+			if (pygame.time.get_ticks() - fireLength) > 2000:
+				screenColor = YELLOW
+				alert = "Reloading"
 			if (pygame.time.get_ticks() - fireLength) > 4000:
 				firing = False
 				launcher.stopMove()
+				screenColor = WHITE
+				alert = "Stationary"
 		else:
 			if button == 1:
 				firing = True
 				fireLength = pygame.time.get_ticks()
 				launcher.launchRocket()
-		textPrint.l_print(screen, "Button {:>2} value: {}".format(0,button) )
+				screenColor = RED
+				alert = "Launching Missile"
+		#textPrint.l_print(screen, "Button {:>2} value: {}".format(0,button) )
 		button = joystick.get_button(7)
-		textPrint.l_print(screen, "Button {:>2} value: {}".format(7,button) )
+		#textPrint.l_print(screen, "Button {:>2} value: {}".format(7,button) )
 		if button == 1:
 			done = True
-		textPrint.unindent()
+		#textPrint.unindent()
             
 		# Hat switch. All or nothing for direction, not like joysticks.
 		# Value comes back in an array.
 		hats = joystick.get_numhats()
-		textPrint.l_print(screen, "Number of hats: {}".format(hats) )
-		textPrint.indent()
+		#textPrint.l_print(screen, "Number of hats: {}".format(hats) )
+		#textPrint.indent()
 
 		#Commented out since there is only 1 d-pad
 		#for i in range( hats ):
@@ -175,28 +188,39 @@ while done == False:
 				if hat[hatDirection] == 0:
 					launcher.stopMove()
 					moving = False
+					screenColor = WHITE
+					alert = "Stationary"
 			else:
 				if hat[0] != 0:
 					if hat[0] == -1: #left
 						launcher.moveLeft()
 						moving = True
 						hatDirection = 0
+						screenColor = GREEN
+						alert = "Moving Left"
 					if hat[0] == 1: #Right
 						launcher.moveRight()
 						moving = True
 						hatDirection = 0
+						screenColor = GREEN
+						alert = "Moving Right"
 				elif hat[1] != 0:
 					if hat[1] == -1: #Down
 						launcher.moveDown()
 						moving = True
 						hatDirection = 1
+						screenColor = GREEN
+						alert = "Moving Down"
 					if hat[1] == 1: #Up
 						launcher.moveUp()
 						moving = True
 						hatDirection = 1
-		textPrint.l_print(screen, "Hat {} value: {}".format(0, str(hat)) )
-		textPrint.unindent()  
-		textPrint.unindent()
+						screenColor = GREEN
+						alert = "Moving Up"
+		#textPrint.l_print(screen, "Hat {} value: {}".format(0, str(hat)) )
+		textPrint.l_print(screen, alert)
+		#textPrint.unindent()  
+		#textPrint.unindent()
 
     
 	# ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
@@ -204,7 +228,7 @@ while done == False:
 	pygame.display.flip()
 
 	# Limit to 20 frames per second
-	clock.tick(20)
+	clock.tick(60)
 
 	if done:
 		launcher.stopMove()
